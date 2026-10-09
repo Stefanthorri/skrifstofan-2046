@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="is">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Snjallveggir 2046</title>
+<style>
+:root{--bg:#f4f3ef;--panel:#ffffff;--ink:#1d2328;--mute:#5d6770;--line:#d9d6cd;--acc:#1f6f5c;--accsoft:#dcefe9;
+--s-floor:#d9d6cc;--s-wall:#ffffff;--s-desk:#b9a88a;--s-chair:#4f6070;--s-stage:#a67c52;--s-core:#c2c6c8;--s-glass:#a9c7d6;--s-lbg:#ffffff;--s-lfg:#1d2328;--s-screen:#2b3b4a;--s-colr:#8e979c}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15191c;--panel:#1d2327;--ink:#e8ebed;--mute:#9aa6ae;--line:#323b41;--acc:#5fc9ac;--accsoft:#1f3a33;
+--s-floor:#2b3135;--s-wall:#cfd8dd;--s-desk:#7d725e;--s-chair:#8ba0b3;--s-stage:#8a6a47;--s-core:#454d52;--s-glass:#4d6a79;--s-lbg:#1d2327;--s-lfg:#e8ebed;--s-screen:#6b8aa6;--s-colr:#98a3a9}}
+:root[data-theme="dark"]{--bg:#15191c;--panel:#1d2327;--ink:#e8ebed;--mute:#9aa6ae;--line:#323b41;--acc:#5fc9ac;--accsoft:#1f3a33;
+--s-floor:#2b3135;--s-wall:#cfd8dd;--s-desk:#7d725e;--s-chair:#8ba0b3;--s-stage:#8a6a47;--s-core:#454d52;--s-glass:#4d6a79;--s-lbg:#1d2327;--s-lfg:#e8ebed;--s-screen:#6b8aa6;--s-colr:#98a3a9}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.app{display:grid;grid-template-columns:minmax(0,1fr) 370px;min-height:100vh}
+.stage{position:relative;min-height:100vh;background:var(--bg)}
+#gl{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.views{position:absolute;left:16px;top:16px;display:flex;gap:6px;flex-wrap:wrap}
+.hint{position:absolute;left:16px;bottom:14px;right:16px;color:var(--mute);font-size:13px;pointer-events:none}
+button{font:inherit;color:var(--ink);cursor:pointer}
+.vbtn{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-size:13px}
+.vbtn:hover{border-color:var(--acc)}
+aside{background:var(--panel);border-left:1px solid var(--line);padding:20px 18px 28px;overflow:auto;max-height:100vh}
+h1{font-size:20px;margin:0 0 2px;letter-spacing:-.01em}
+.sub{color:var(--mute);margin:0 0 18px;font-size:13.5px}
+h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--mute);margin:22px 0 8px;font-weight:600}
+.pre{display:block;width:100%;text-align:left;background:transparent;border:1px solid var(--line);border-radius:10px;padding:9px 12px;margin-bottom:7px}
+.pre b{display:block;font-weight:600;font-size:14.5px}
+.pre span{display:block;color:var(--mute);font-size:12.5px}
+.pre:hover{border-color:var(--acc)}
+.pre.on{border-color:var(--acc);background:var(--accsoft)}
+.pre.big{border-width:2px}
+svg#plan{width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.wr{display:grid;grid-template-columns:1fr 110px 64px;gap:8px;align-items:center;padding:5px 0;font-size:13.5px}
+.wr small{color:var(--mute);text-align:right;font-size:12px}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.sp{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--line)}
+.sp:last-child{border:0}
+.sw{width:12px;height:12px;border-radius:3px;margin-top:5px;flex:none}
+.sp b{font-weight:600}
+.sp div span{display:block;color:var(--mute);font-size:12.5px}
+label.ck{display:flex;gap:8px;align-items:center;padding:3px 0;font-size:14px}
+.note{color:var(--mute);font-size:12.5px;margin-top:18px}
+@media (max-width:860px){
+ .app{grid-template-columns:1fr}
+ .stage{min-height:62vh;height:62vh}
+ aside{max-height:none;border-left:0;border-top:1px solid var(--line)}
+ .wr{grid-template-columns:1fr 96px 56px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+ <div class="stage" id="stage">
+  <canvas id="gl"></canvas>
+  <div class="views">
+   <button class="vbtn" data-v="iso">Skáhallt</button>
+   <button class="vbtn" data-v="top">Ofan frá</button>
+   <button class="vbtn" data-v="seat">Úr salnum</button>
+   <button class="vbtn" data-v="cub">Úr básunum</button>
+  </div>
+  <div class="hint">Dragðu vegg eftir endilöngu eða smelltu á hann til að draga hann inn og út. Snúðu með músinni.</div>
+ </div>
+ <aside>
+  <h1>Snjallveggir 2046</h1>
+  <p class="sub">Ein opin hæð. Húsgögnin eru föst. Veggirnir ráða hvers konar rými þú ert í.</p>
+
+  <h2>Stilling</h2>
+  <div id="pres"></div>
+
+  <h2>Grunnmynd</h2>
+  <svg id="plan" viewBox="-0.5 -0.5 31 19"></svg>
+
+  <h2>Veggir</h2>
+  <div id="walls"></div>
+
+  <h2>Rými núna</h2>
+  <div id="spaces"></div>
+
+  <h2>Sýna</h2>
+  <label class="ck"><input type="checkbox" id="cPeople" checked> Fólk (þegar salurinn er opnaður)</label>
+  <label class="ck"><input type="checkbox" id="cLabels" checked> Heiti rýma</label>
+  <label class="ck"><input type="checkbox" id="cCols" checked> Súlur (burðarkerfi)</label>
+  <label class="ck"><input type="checkbox" id="cRails" checked> Brautir í lofti og gólfi</label>
+
+  <p class="note">Hæðin er 30 × 18 m. Burðarþol: súlur á 6 til 9 m bili bera lóðrétt álag og steypukjarninn í horninu tekur hliðarálag. Þetta er hugmynd, ekki verkfræðileg hönnun. Mál og sætafjöldi eru ágiskun úr skissunni.</p>
+ </aside>
+</div>
+
+<script src="three.min.js"></script>
+<script src="OrbitControls.js"></script>
+<script>
+(function(){
+"use strict";
+var W=30,D=18,H=2.8,OX=15,OZ=9;
+var $=function(i){return document.getElementById(i)};
+function cssv(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()||"#888"}
+
+/* ---------- model ---------- */
+var CELLS={
+ CR1:{x0:0,x1:6,z0:0,z1:9,n:"CR1"},
+ CR2:{x0:6,x1:11.5,z0:0,z1:9,n:"CR2"},
+ CR3:{x0:11.5,x1:15,z0:0,z1:9,n:"CR3"},
+ CUB:{x0:0,x1:15,z0:9,z1:18,n:"Básar"},
+ CHA:{x0:15,x1:30,z0:0,z1:9,n:"Stólarými"},
+ SAL:{x0:15,x1:30,z0:9,z1:18,n:"Salur"}};
+var CK=Object.keys(CELLS);
+var SAL_FIXED=5.5*4.5; /* kaffistofa */
+var SAL_FREE=135-SAL_FIXED-8.5*1.8; /* laust gólf */
+var WALLS=[
+ {id:"w1",n:"CR1 | CR2",p:[6,0],d:[0,1],L:9,e:[["CR1","CR2"]]},
+ {id:"w2",n:"CR2 | CR3",p:[11.5,0],d:[0,1],L:9,e:[["CR2","CR3"]]},
+ {id:"w3",n:"CR3 | Stólarými",p:[15,0],d:[0,1],L:9,e:[["CR3","CHA"]]},
+ {id:"w4",n:"Fundarherb. | Básar",p:[0,9],d:[1,0],L:15,e:[["CR1","CUB"],["CR2","CUB"],["CR3","CUB"]]},
+ {id:"w5",n:"Stólarými | Salur",p:[30,9],d:[-1,0],L:15,e:[["CHA","SAL"]]},
+ {id:"w6",n:"Básar | Salur",p:[15,18],d:[0,-1],L:9,e:[["CUB","SAL"]]}];
+var ALL={};WALLS.forEach(function(w){ALL[w.id]=1});
+var PRE=[
+ {k:"all",n:"Ávarp í lok dags",s:"Allir veggir inn: ein hæð, einn salur",o:ALL,big:1},
+ {k:"work",n:"Vinnudagur",s:"Allir veggir úti: 3 fundarherbergi, básar, stólarými",o:{}},
+ {k:"cr12",n:"Stór fundur: CR1 + CR2",s:"Veggurinn á milli dreginn inn",o:{w1:1}},
+ {k:"cr123",n:"Risafundur: CR1 + CR2 + CR3",s:"Báðir fundarveggir inn",o:{w1:1,w2:1}},
+ {k:"cin",n:"Bíósalur / ráðstefna",s:"Stólarými opnað inn í salinn, öll sæti snúa að sviðinu",o:{w5:1}}];
+var TINT=["#2f9e8a","#d6883a","#5b7fd1","#c25b8a","#8aa83a","#8a6fc9"];
+var tgt={},cur={};WALLS.forEach(function(w){tgt[w.id]=0;cur[w.id]=0});
+var seats={CR1:0,CR2:0,CR3:0,CUB:0,CHA:0,SAL:0};
+
+function comps(){
+ var par={};CK.forEach(function(k){par[k]=k});
+ function f(a){while(par[a]!==a){par[a]=par[par[a]];a=par[a]}return a}
+ WALLS.forEach(function(w){if(tgt[w.id]>0.5)w.e.forEach(function(e){par[f(e[0])]=f(e[1])})});
+ var g={};CK.forEach(function(k){var r=f(k);(g[r]=g[r]||[]).push(k)});
+ return Object.keys(g).map(function(r){return g[r]});
+}
+function area(k){var c=CELLS[k];var a=(c.x1-c.x0)*(c.z1-c.z0);return k==="SAL"?a-SAL_FIXED:a}
+function nameOf(s){
+ if(s.length===6)return "Einn salur: öll hæðin";
+ var has=function(k){return s.indexOf(k)>=0};
+ var cr=s.filter(function(k){return k.indexOf("CR")===0}).sort();
+ if(s.length===1){
+  if(cr.length)return "Fundarherbergi "+cr[0];
+  if(has("CUB"))return "Opið skrifstofusvæði";
+  if(has("CHA"))return "Stólarými (VR / fartölva)";
+  return "Opið gólf og svið";
+ }
+ if(cr.length===s.length)return "Stórt fundarherbergi ("+cr.join(" + ")+")";
+ if(s.length===2&&has("CHA")&&has("SAL"))return "Bíósalur / ráðstefnusalur";
+ return "Sameinað rými ("+s.map(function(k){return CELLS[k].n}).join(" + ")+")";
+}
+function info(s){
+ var a=0,n=0,st=0;
+ s.forEach(function(k){a+=area(k);n+=seats[k]});
+ if(s.indexOf("SAL")>=0)st=Math.floor(SAL_FREE/1.2);
+ return {a:a,n:n,st:st};
+}
+
+/* ---------- three ---------- */
+var stage=$("stage"),canvas=$("gl");
+var renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true,alpha:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
+var scene=new THREE.Scene();
+var camera=new THREE.PerspectiveCamera(42,1,0.1,200);
+var controls=new THREE.OrbitControls(camera,canvas);
+controls.enableDamping=true;controls.maxPolarAngle=Math.PI/2.02;controls.minDistance=3;controls.maxDistance=70;
+scene.add(new THREE.HemisphereLight(0xffffff,0x778088,0.85));
+var dl=new THREE.DirectionalLight(0xffffff,0.55);dl.position.set(-12,30,18);scene.add(dl);
+var root=new THREE.Group();root.position.set(-OX,0,-OZ);scene.add(root);
+
+var M={};
+function mat(k,o){M[k]=new THREE.MeshStandardMaterial(Object.assign({roughness:.7,metalness:0},o||{}));return M[k]}
+mat("floor");mat("wall",{transparent:true,opacity:.5,roughness:.3,depthWrite:false});
+mat("desk");mat("chair");mat("stage");mat("core");mat("glass",{transparent:true,opacity:.16,depthWrite:false});
+mat("screen",{side:THREE.DoubleSide,roughness:.4});mat("dark",{color:0x2a3138});mat("rail",{transparent:true,opacity:.7});
+mat("post",{});mat("col",{roughness:.9});
+function palette(){
+ M.floor.color.set(cssv("--s-floor"));M.wall.color.set(cssv("--s-wall"));M.desk.color.set(cssv("--s-desk"));
+ M.chair.color.set(cssv("--s-chair"));M.stage.color.set(cssv("--s-stage"));M.core.color.set(cssv("--s-core"));
+ M.glass.color.set(cssv("--s-glass"));M.screen.color.set(cssv("--s-screen"));M.rail.color.set(cssv("--acc"));M.post.color.set(cssv("--s-chair"));M.col.color.set(cssv("--s-colr"));
+ if(typeof refresh==="function")refresh(true);
+}
+function box(w,h,d,m,x,y,z,par){var o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);(par||root).add(o);return o}
+
+/* floor, glass */
+box(W+.4,.3,D+.4,M.floor,W/2,-.15,D/2);
+box(W,H,.06,M.glass,W/2,H/2,0);box(W,H,.06,M.glass,W/2,H/2,D);
+box(.06,H,D,M.glass,0,H/2,D/2);box(.06,H,D,M.glass,W,H/2,D/2);
+for(var i=0;i<=10;i++){var mx=i*W/10;box(.08,H,.08,M.post,mx,H/2,0);box(.08,H,.08,M.post,mx,H/2,D)}
+for(i=1;i<6;i++){var mz=i*D/6;box(.08,H,.08,M.post,0,H/2,mz);box(.08,H,.08,M.post,W,H/2,mz)}
+
+/* súlur */
+var colG=new THREE.Group();root.add(colG);
+[0,6,15,22.5,30].forEach(function(x){[0,9,18].forEach(function(z){
+ var cx=Math.min(Math.max(x,.25),W-.25),cz=Math.min(Math.max(z,.25),D-.25);
+ var c=new THREE.Mesh(new THREE.BoxGeometry(.5,H,.5),M.col);c.position.set(cx,H/2,cz);colG.add(c)})});
+/* floor tints */
+var tints={};
+CK.forEach(function(k){var c=CELLS[k];
+ var m=new THREE.MeshBasicMaterial({color:0x888888,transparent:true,opacity:.3,depthWrite:false});
+ var p=new THREE.Mesh(new THREE.PlaneGeometry(c.x1-c.x0,c.z1-c.z0),m);
+ p.rotation.x=-Math.PI/2;p.position.set((c.x0+c.x1)/2,.015,(c.z0+c.z1)/2);root.add(p);tints[k]=m});
+
+/* furniture */
+var chairs=[];
+function chair(x,z,fx,fz,cell){chairs.push({x:x,z:z,a:Math.atan2(fx,fz),c:cell});seats[cell]++}
+function crRoom(k,len,tw){
+ var c=CELLS[k],cx=(c.x0+c.x1)/2,cz=4.5;
+ box(tw,.75,len,M.desk,cx,.375,cz);
+ var n=Math.floor(len/.8);
+ for(var i=0;i<n;i++){var z=cz-(n-1)*.4+i*.8;chair(cx-tw/2-.5,z,1,0,k);chair(cx+tw/2+.5,z,-1,0,k)}
+}
+crRoom("CR1",6.4,1.6);crRoom("CR2",5.6,1.6);crRoom("CR3",4.0,1.0);
+for(var cc=0;cc<4;cc++)for(var rr=0;rr<3;rr++){
+ var dx=2.1+cc*3.6,dz=10.8+rr*2.7;
+ box(1.8,.74,.8,M.desk,dx,.37,dz);
+ box(2.0,1.3,.06,M.wall,dx,.65,dz-.5);
+ box(.06,1.3,1.1,M.wall,dx-1,.65,dz);box(.06,1.3,1.1,M.wall,dx+1,.65,dz);
+ box(.5,.34,.04,M.dark,dx,1.0,dz-.25);
+ chair(dx,dz+.9,0,-1,"CUB");
+}
+for(var r=0;r<7;r++)for(var j=0;j<16;j++)chair(16.1+j*.85,1.2+r*1.2,0,1,"CHA");
+/* svið */
+box(8.5,.4,1.7,M.stage,20.75,.2,16.85);
+box(.5,1.0,.5,M.desk,20.75,.9,16.6);
+/* kaffistofa */
+box(4.5,H,5.5,M.core,27.75,H/2,15.25);
+(function(){for(var i=0;i<8;i++)box(2.4,.1,.3,M.wall,27.8,.15+i*.3,12.9+.0+i*.0+.0).position.z=17.55-i*.4})();
+
+/* instanced chairs */
+var gSeat=new THREE.BoxGeometry(.46,.06,.46);gSeat.translate(0,.45,0);
+var gBack=new THREE.BoxGeometry(.46,.5,.05);gBack.translate(0,.72,-.22);
+var gPost=new THREE.BoxGeometry(.07,.45,.07);gPost.translate(0,.22,0);
+var dm=new THREE.Object3D();
+[gSeat,gBack,gPost].forEach(function(g){
+ var im=new THREE.InstancedMesh(g,M.chair,chairs.length);im.frustumCulled=false;
+ chairs.forEach(function(c,i){dm.position.set(c.x,0,c.z);dm.rotation.set(0,c.a,0);dm.updateMatrix();im.setMatrixAt(i,dm.matrix)});
+ root.add(im)});
+
+/* people */
+function person(tall,seated){
+ var a=seated?new THREE.CylinderGeometry(.19,.19,.6,10):new THREE.CylinderGeometry(.2,.2,1.4,10);
+ a.translate(0,seated?.8:.7,0);
+ var h=new THREE.SphereGeometry(seated?.12:.13,10,8);h.translate(0,seated?1.25:1.6,0);
+ return [a,h];
+}
+var PC=["#d9826a","#6aa7d9","#d9bf6a","#8ccf8a","#b58ad9"];
+function mkPeople(list,seated){
+ var gs=person(0,seated),ms=[];
+ gs.forEach(function(g){
+  var im=new THREE.InstancedMesh(g,new THREE.MeshStandardMaterial({roughness:.8}),list.length);im.frustumCulled=false;
+  list.forEach(function(p,i){im.setColorAt(i,new THREE.Color(PC[(i*7+(p.x*3|0))%PC.length]))});
+  root.add(im);ms.push(im)});
+ return {list:list,ms:ms,s:0,t:0};
+}
+var seatedL=chairs.filter(function(c){return c.c==="CHA"}).map(function(c){return {x:c.x,z:c.z}});
+var standL=[],sd=7;function rnd(){sd=(sd*16807)%2147483647;return sd/2147483647}
+for(var px=16.2;px<29.2;px+=1.05)for(var pz=10.2;pz<15.6;pz+=1.05){
+ var X=px+(rnd()-.5)*.5,Z=pz+(rnd()-.5)*.5;
+ if(X>25.0&&Z>12.2)continue;standL.push({x:X,z:Z})}
+var P1=mkPeople(seatedL,true),P2=mkPeople(standL,false);
+function setPeople(G){
+ G.ms.forEach(function(im){
+  G.list.forEach(function(p,i){dm.position.set(p.x,0,p.z);dm.rotation.set(0,0,0);dm.scale.setScalar(Math.max(G.s,.001));dm.updateMatrix();im.setMatrixAt(i,dm.matrix)});
+  dm.scale.setScalar(1);im.instanceMatrix.needsUpdate=true;im.visible=G.s>.02});
+}
+setPeople(P1);setPeople(P2);
+/* fastar persónur: gestir við innganginn og ræðumaður */
+(function(){
+ var fm=new THREE.MeshStandardMaterial({color:0xd9826a,roughness:.8}),fm2=new THREE.MeshStandardMaterial({color:0x1f6f5c,roughness:.8});
+ function fig(x,z,m){var b=new THREE.Mesh(new THREE.CylinderGeometry(.2,.2,1.4,10),m);b.position.set(x,.7,z);root.add(b);
+  var h=new THREE.Mesh(new THREE.SphereGeometry(.13,10,8),m);h.position.set(x,1.6,z);root.add(h)}
+ fig(24.2,12.4,fm);fig(24.8,13.2,fm);fig(24.1,14.0,fm);
+ var s=new THREE.Mesh(new THREE.CylinderGeometry(.2,.2,1.4,10),fm2);s.position.set(20.2,.4+.7,16.9);root.add(s);
+ var h=new THREE.Mesh(new THREE.SphereGeometry(.13,10,8),fm2);h.position.set(20.2,2.0,16.9);root.add(h);
+})();
+
+/* walls */
+var wallObjs={},railG=new THREE.Group();root.add(railG);
+WALLS.forEach(function(w){
+ var g=new THREE.Group();g.position.set(w.p[0],0,w.p[1]);g.rotation.y=Math.atan2(-w.d[1],w.d[0]);root.add(g);
+ var gs=new THREE.BoxGeometry(1,H,.1);gs.translate(.5,H/2,0);
+ var slab=new THREE.Mesh(gs,M.wall);slab.userData.wid=w.id;g.add(slab);
+ var gt=new THREE.BoxGeometry(1,.07,.16);gt.translate(.5,H,0);
+ var top=new THREE.Mesh(gt,M.post);g.add(top);
+ var gb=new THREE.BoxGeometry(1,.05,.14);gb.translate(.5,.03,0);
+ var bot=new THREE.Mesh(gb,M.post);g.add(bot);
+ var pst=new THREE.Mesh(new THREE.BoxGeometry(.2,H,.2),M.post);pst.position.set(0,H/2,0);g.add(pst);
+ /* brautir */
+ var rg=new THREE.Group();rg.position.copy(g.position);rg.rotation.y=g.rotation.y;
+ var r1=new THREE.Mesh(new THREE.BoxGeometry(w.L,.03,.07),M.rail);r1.position.set(w.L/2,H+.05,0);rg.add(r1);
+ var r2=new THREE.Mesh(new THREE.BoxGeometry(w.L,.012,.09),M.rail);r2.position.set(w.L/2,.012,0);rg.add(r2);
+ railG.add(rg);
+ wallObjs[w.id]={g:g,slab:slab,top:top,bot:bot,w:w};
+});
+function updWall(id){
+ var o=wallObjs[id],len=Math.max(o.w.L*(1-cur[id]),.0);
+ var s=Math.max(len,.001);
+ o.slab.scale.x=s;o.top.scale.x=s;o.bot.scale.x=s;
+ o.slab.visible=len>.12;o.top.visible=len>.12;o.bot.visible=len>.12;
+}
+
+/* labels */
+var labG=new THREE.Group();root.add(labG);
+function fitFont(x,t,maxW,sz,wt){var s=sz;do{x.font=wt+" "+s+"px system-ui,sans-serif";s-=2}while(x.measureText(t).width>maxW&&s>16);}
+function label(l1,l2,sc){
+ var c=document.createElement("canvas");c.width=768;c.height=180;var x=c.getContext("2d");
+ var r=26;x.fillStyle=cssv("--s-lbg");x.globalAlpha=.9;
+ x.beginPath();x.moveTo(r,6);x.arcTo(762,6,762,174,r);x.arcTo(762,174,6,174,r);x.arcTo(6,174,6,6,r);x.arcTo(6,6,762,6,r);x.fill();x.globalAlpha=1;
+ x.fillStyle=cssv("--s-lfg");x.textAlign="center";
+ fitFont(x,l1,700,54,600);x.fillText(l1,384,84);
+ if(l2){fitFont(x,l2,700,38,400);x.globalAlpha=.75;x.fillText(l2,384,138);x.globalAlpha=1}
+ var t=new THREE.CanvasTexture(c);t.minFilter=THREE.LinearFilter;
+ var sp=new THREE.Sprite(new THREE.SpriteMaterial({map:t,depthTest:false,transparent:true}));
+ sp.scale.set(6.2*sc,6.2*sc*180/768,1);sp.renderOrder=10;return sp;
+}
+var staticL=new THREE.Group();root.add(staticL);
+function addStatic(t,x,y,z){var s=label(t,"",.62);s.position.set(x,y,z);staticL.add(s)}
+function buildStatic(){
+ while(staticL.children.length){var o=staticL.children.pop();o.material.map.dispose();o.material.dispose()}
+ addStatic("Svið",20.75,2.6,16.9);
+ addStatic("Steypukjarni: kaffistofa · salerni · stigi",27.75,3.5,15.25);addStatic("Inngangur",23.3,2.4,12.0);
+}
+function buildLabels(list){
+ while(labG.children.length){var o=labG.children.pop();o.material.map.dispose();o.material.dispose()}
+ list.forEach(function(s){
+  var I=info(s),ax=0,az=0,at=0;
+  s.forEach(function(k){var c=CELLS[k],a=area(k);ax+=(c.x0+c.x1)/2*a;az+=(c.z0+c.z1)/2*a;at+=a});
+  var l2=Math.round(I.a)+" m² · "+(I.n?I.n+" sæti":"engin föst sæti")+(I.st?" · ~"+I.st+" standandi":"");
+  var sp=label(nameOf(s),l2,1);sp.position.set(ax/at,3.7,az/at);labG.add(sp)});
+}
+
+/* ---------- raycast + drag ---------- */
+var ray=new THREE.Raycaster(),mouse=new THREE.Vector2(),drag=null,plane=new THREE.Plane(new THREE.Vector3(0,1,0),-1.4);
+function setM(e){var r=canvas.getBoundingClientRect();mouse.set((e.clientX-r.left)/r.width*2-1,-((e.clientY-r.top)/r.height)*2+1);ray.setFromCamera(mouse,camera)}
+function pick(e){setM(e);var hits=ray.intersectObjects(WALLS.map(function(w){return wallObjs[w.id].slab}).concat([]),false);
+ return hits.length?hits[0].object.userData.wid:null}
+canvas.addEventListener("pointerdown",function(e){
+ fly=null;var id=pick(e);
+ if(id){drag={id:id,x:e.clientX,y:e.clientY,moved:false};controls.enabled=false;canvas.setPointerCapture(e.pointerId)}
+});
+canvas.addEventListener("pointermove",function(e){
+ if(!drag){canvas.style.cursor=pick(e)?"grab":"";return}
+ if(!drag.moved&&Math.hypot(e.clientX-drag.x,e.clientY-drag.y)>6)drag.moved=true;
+ if(drag.moved){
+  setM(e);var p=new THREE.Vector3();
+  if(ray.ray.intersectPlane(plane,p)){
+   var w=wallObjs[drag.id].w,lx=p.x+OX,lz=p.z+OZ;
+   var t=((lx-w.p[0])*w.d[0]+(lz-w.p[1])*w.d[1])/w.L;
+   tgt[drag.id]=1-Math.max(0,Math.min(1,t));refresh();
+  }
+ }
+});
+function endDrag(e){
+ if(!drag)return;var id=drag.id,mv=drag.moved;drag=null;controls.enabled=true;
+ tgt[id]=mv?(tgt[id]>.5?1:0):(tgt[id]>.5?0:1);refresh();
+}
+canvas.addEventListener("pointerup",endDrag);canvas.addEventListener("pointercancel",endDrag);
+
+/* ---------- views ---------- */
+var VIEWS={
+ iso:{p:[0,25,30],t:[0,0,0]},
+ top:{p:[0,40,9],t:[0,0,0]},
+ seat:{p:[5.7,1.8,-8.3],t:[5.75,0.9,8]},
+ cub:{p:[-13.5,1.7,-7.5],t:[3,1,3]}};
+var fly=null;
+var inside=false;
+function view(k){var v=VIEWS[k];inside=(k==="seat"||k==="cub");labG.visible=!inside&&$("cLabels").checked;staticL.visible=!inside;fly={p:new THREE.Vector3().fromArray(v.p),t:new THREE.Vector3().fromArray(v.t)}}
+Array.prototype.forEach.call(document.querySelectorAll("[data-v]"),function(b){b.onclick=function(){view(b.dataset.v)}});
+camera.position.set(0,25,30);controls.target.set(0,0,0);
+
+/* ---------- UI ---------- */
+var presBtns={};
+PRE.forEach(function(p){
+ var b=document.createElement("button");b.className="pre"+(p.big?" big":"");
+ b.innerHTML="<b>"+p.n+"</b><span>"+p.s+"</span>";
+ b.onclick=function(){WALLS.forEach(function(w){tgt[w.id]=p.o[w.id]?1:0});refresh();
+  if(p.k==="all")view("iso");if(p.k==="cin")view("seat")};
+ $("pres").appendChild(b);presBtns[p.k]=b});
+
+var sliders={},stat={};
+WALLS.forEach(function(w){
+ var d=document.createElement("div");d.className="wr";
+ d.innerHTML="<span>"+w.n+"</span><input type=range min=0 max=100 step=1 aria-label=\""+w.n+"\"><small></small>";
+ var inp=d.querySelector("input");inp.oninput=function(){tgt[w.id]=inp.value/100;refresh()};
+ inp.onchange=function(){tgt[w.id]=tgt[w.id]>.5?1:0;refresh()};
+ sliders[w.id]=inp;stat[w.id]=d.querySelector("small");$("walls").appendChild(d)});
+
+var NS="http://www.w3.org/2000/svg";
+function se(n,a,p){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);(p||$("plan")).appendChild(e);return e}
+var planCells={},planWalls={};
+CK.forEach(function(k){var c=CELLS[k];planCells[k]=se("rect",{x:c.x0,y:c.z0,width:c.x1-c.x0,height:c.z1-c.z0,fill:"#888","fill-opacity":.3,stroke:"none"});
+ var t=se("text",{x:(c.x0+c.x1)/2,y:(c.z0+c.z1)/2+.5,"text-anchor":"middle","font-size":1.5,fill:cssv("--mute")});t.textContent=c.n;t.setAttribute("class","pt");});
+se("rect",{x:25.5,y:12.5,width:4.5,height:5.5,fill:"#999","fill-opacity":.5});
+se("rect",{x:16.5,y:16,width:8.5,height:1.8,fill:"#a67c52","fill-opacity":.6});
+se("rect",{x:0,y:0,width:30,height:18,fill:"none",stroke:"#888","stroke-width":.25});
+WALLS.forEach(function(w){
+ var x2=w.p[0]+w.d[0]*w.L,y2=w.p[1]+w.d[1]*w.L;
+ var l=se("line",{x1:w.p[0],y1:w.p[1],x2:x2,y2:y2,"stroke-width":.35,stroke:"currentColor"});
+ var h=se("line",{x1:w.p[0],y1:w.p[1],x2:x2,y2:y2,"stroke-width":1.6,stroke:"transparent",style:"cursor:pointer"});
+ h.onclick=function(){tgt[w.id]=tgt[w.id]>.5?0:1;refresh()};
+ planWalls[w.id]=l});
+$("plan").style.color=cssv("--ink");
+
+function refresh(pal){
+ var list=comps();
+ list.forEach(function(s,i){s.forEach(function(k){tints[k].color.set(TINT[i%6]);planCells[k].setAttribute("fill",TINT[i%6])})});
+ WALLS.forEach(function(w){
+  var o=tgt[w.id];sliders[w.id].value=Math.round(o*100);
+  stat[w.id].textContent=o<.02?"lokaður":o>.98?"inni":Math.round(o*100)+"%";
+  var l=planWalls[w.id];
+  if(o>.5){l.setAttribute("stroke-dasharray","0.5 0.5");l.setAttribute("stroke-width",.2);l.setAttribute("stroke",cssv("--acc"))}
+  else{l.removeAttribute("stroke-dasharray");l.setAttribute("stroke-width",.4);l.setAttribute("stroke",cssv("--ink"))}
+ });
+ PRE.forEach(function(p){var on=WALLS.every(function(w){return (tgt[w.id]>.5?1:0)===(p.o[w.id]?1:0)});presBtns[p.k].classList.toggle("on",on)});
+ var sp=$("spaces");sp.innerHTML="";
+ list.sort(function(a,b){return info(b).a-info(a).a}).forEach(function(s){
+  var I=info(s),i=comps().indexOf(s);
+  var d=document.createElement("div");d.className="sp";
+  var col=TINT[comps().findIndex(function(x){return x.indexOf(s[0])>=0})%6];
+  d.innerHTML="<i class=sw style=\"background:"+col+"\"></i><div><b>"+nameOf(s)+"</b><span>"+Math.round(I.a)+" m² · "+(I.n?I.n+" föst sæti":"engin föst sæti")+(I.st?" · pláss fyrir ~"+I.st+" standandi":"")+"</span></div>";
+  sp.appendChild(d)});
+ var cl=comps();
+ buildLabels(cl);labG.visible=!inside&&$("cLabels").checked;
+ /* fólk */
+ var salC=cl.filter(function(s){return s.indexOf("SAL")>=0})[0],chaC=cl.filter(function(s){return s.indexOf("CHA")>=0})[0];
+ var on=$("cPeople").checked;
+ P1.t=on&&chaC.indexOf("SAL")>=0?1:0;
+ P2.t=on&&salC.length>=3?1:0;
+ if(pal===true)buildStatic();
+}
+$("cPeople").onchange=function(){refresh()};
+$("cLabels").onchange=function(){refresh()};
+$("cCols").onchange=function(){colG.visible=$("cCols").checked};
+$("cRails").onchange=function(){railG.visible=$("cRails").checked};
+
+/* ---------- loop ---------- */
+var reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+var clock=new THREE.Clock();
+function size(){var w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
+new ResizeObserver(size).observe(stage);size();
+function loop(){
+ var dt=Math.min(clock.getDelta(),.05),k=1-Math.exp(-(reduce?40:3.2)*dt);
+ WALLS.forEach(function(w){var d=tgt[w.id]-cur[w.id];
+  if(Math.abs(d)>.0005){cur[w.id]+=Math.sign(d)*Math.min(Math.abs(d),Math.max(Math.abs(d)*k,dt*(reduce?9:.12)));updWall(w.id)}
+  else if(cur[w.id]!==tgt[w.id]){cur[w.id]=tgt[w.id];updWall(w.id)}});
+ [P1,P2].forEach(function(G){var d=G.t-G.s;if(Math.abs(d)>.002){G.s+=d*k;setPeople(G)}else if(G.s!==G.t){G.s=G.t;setPeople(G)}});
+ if(fly){var kk=1-Math.exp(-(reduce?40:3)*dt);camera.position.lerp(fly.p,kk);controls.target.lerp(fly.t,kk);
+  if(camera.position.distanceTo(fly.p)<.05)fly=null}
+ controls.update();renderer.render(scene,camera);requestAnimationFrame(loop);
+}
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",function(){setTimeout(function(){palette();$("plan").style.color=cssv("--ink")},50)});
+WALLS.forEach(function(w){updWall(w.id)});
+palette();refresh(true);loop();
+window.__app={tgt:tgt,refresh:refresh,view:view};
+})();
+</script>
+</body>
+</html>
